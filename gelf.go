@@ -110,6 +110,10 @@ func (m GelfMessage) getExtraFields() (json.RawMessage, error) {
 		"_image_name":     m.Container.Config.Image,
 		"_command":        strings.Join(m.Container.Config.Cmd[:], " "),
 		"_created":        m.Container.Created,
+		"_k8s_namespace":  m.Container.Config.Labels.io.kubernetes.pod.namespace,
+		"_k8s_pod_name":   m.Container.Config.Labels.io.kubernetes.pod.name,
+		"_k8s_pod_uid":    m.Container.Config.Labels.io.kubernetes.pod.uid,
+		"_k8s_container_name":    m.Container.Config.Labels.io.kubernetes.container.name,
 	}
 	for name, label := range m.Container.Config.Labels {
 		if len(name) > 5 && strings.ToLower(name[0:5]) == "gelf_" {
