@@ -27,6 +27,7 @@ func getHostname() string {
 	if err == nil && len(content) > 0 {
 		hostname = strings.TrimRight(string(content), "\r\n")
 	} else {
+		log.Println("getHostname err:", err)
 		hostname = getopt("K8S_HOSTNAME", "{{.Container.Config.Hostname}}")
 	}
 	return hostname
