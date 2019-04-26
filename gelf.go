@@ -7,15 +7,33 @@ import (
 	"os"
 	"strings"
 	"time"
-
+        "io/ioutil"
 	"github.com/Graylog2/go-gelf/gelf"
 	"github.com/gliderlabs/logspout/router"
 )
 
 var hostname string
 
+func getopt(name, dfault string) string {
+	value := os.Getenv(name)
+	if value == "" {
+		value = dfault
+	}
+	return value
+}
+
+func getHostname() string {
+	content, err := ioutil.ReadFile("/etc/host_hostname")
+	if err == nil && len(content) > 0 {
+		hostname = strings.TrimRight(string(content), "\r\n")
+	} else {
+		hostname = getopt("K8S_HOSTNAME", "{{.Container.Config.Hostname}}")
+	}
+	return hostname
+}
+
 func init() {
-	hostname, _ = os.Hostname()
+	hostname = getHostname()
 	router.AdapterFactories.Register(NewGelfAdapter, "gelf")
 }
 
